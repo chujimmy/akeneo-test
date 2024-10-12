@@ -1,0 +1,1 @@
+# akeneo-test
