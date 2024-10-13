@@ -1,0 +1,26 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = {version = "*", index = "pypi"}
+flake8 = {version = "*", index = "pypi"}
+flake8-bugbear = {version = "*", index = "pypi"}
+flake8-comprehensions = {version = "*", index = "pypi"}
+flake8-isort = {version = "*", index = "pypi"}
+ipdb = {version = "*", index = "pypi"}
+mypy = {version = "*", index = "pypi"}
+pdbpp = {version = "*", index = "pypi"}
+pytest = {version = "*", index = "pypi"}
+pytest-mock = {version = "*", index = "pypi"}
+
+[packages]
+environs = {version = ">=11,<12", index = "pypi"}
+flask = {version = ">=3,<4", index = "pypi"}
+flask-cors = {version = ">=5,<6", index = "pypi"}
+flask-sqlalchemy = {version = ">=3,<4", index = "pypi"}
+marshmallow = {version = ">=3,<4", index = "pypi"}
+
+[requires]
+python_version = "3.12"

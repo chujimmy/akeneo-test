@@ -1,0 +1,7 @@
+[flake8]
+exclude = .venv,__pycache__
+# For black compatibility
+max-line-length = 88
+ignore =
+    # For black compatibility
+    E501,
