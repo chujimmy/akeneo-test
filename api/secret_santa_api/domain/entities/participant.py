@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class Participant:
-    id: int
     name: str
     email: str
+    id: Optional[int] = None

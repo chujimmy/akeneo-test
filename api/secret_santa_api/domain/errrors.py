@@ -1,0 +1,2 @@
+class ParticipantAlreadyRegisteredError(Exception):
+    pass
