@@ -1,0 +1,8 @@
+from secret_santa_api.adapters.participant import ParticipantRepositorySQLAdapter
+from secret_santa_api.use_cases.get_all_participants import GetAllParticipants
+
+# Adapters
+participant_repository_sql_adapter = ParticipantRepositorySQLAdapter()
+
+# Use Cases
+get_all_participants = GetAllParticipants(participant_repository_sql_adapter)

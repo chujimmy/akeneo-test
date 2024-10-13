@@ -3,8 +3,8 @@ import pytest
 from secret_santa_api import create_app
 
 
-@pytest.fixture(scope="session")
-def client():
+@pytest.fixture(scope="function")
+def app():
     app = create_app()
     app.config.update(
         {
@@ -13,5 +13,10 @@ def client():
         }
     )
 
+    return app
+
+
+@pytest.fixture(scope="function")
+def client(app):
     with app.test_client() as client:
         yield client
