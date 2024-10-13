@@ -1,7 +1,7 @@
 from typing import List
 
-from secret_santa_api.entities.participant import Participant
-from secret_santa_api.ports.participant import ParticipantRepositoryPort
+from secret_santa_api.domain.entities.participant import Participant
+from secret_santa_api.domain.ports.participant import ParticipantRepositoryPort
 
 
 class GetAllParticipants:
