@@ -2,7 +2,7 @@ from environs import Env
 from flask import Flask
 from flask_cors import CORS
 
-import secret_santa_api.models  # noqa
+import secret_santa_api.adapters.database  # noqa
 from secret_santa_api.db import db
 from secret_santa_api.routes.participant import participant_bp
 
