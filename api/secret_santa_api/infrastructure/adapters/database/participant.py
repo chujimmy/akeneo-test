@@ -14,3 +14,11 @@ class Participant(db.Model):  # type: ignore
         nullable=False,
         server_default=func.strftime("%Y-%m-%dT%H:%M:%SZ", func.datetime("now", "utc")),
     )
+
+    # Relationship to draw detail
+    giftee_assignments = db.relationship(
+        "DrawDetail", foreign_keys="[DrawDetail.gifter_id]"
+    )
+    gifter_assignments = db.relationship(
+        "DrawDetail", foreign_keys="[DrawDetail.receiver_id]"
+    )

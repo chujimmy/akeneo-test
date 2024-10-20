@@ -7,6 +7,7 @@ from werkzeug.exceptions import HTTPException
 
 import secret_santa_api.infrastructure.adapters.database  # noqa
 from secret_santa_api.db import db
+from secret_santa_api.infrastructure.routes.draw import draw_bp
 from secret_santa_api.infrastructure.routes.participant import participant_bp
 
 
@@ -17,6 +18,7 @@ def create_app():
     app = Flask(__name__)
     app.errorhandler(Exception)(handle_error)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///secret_santa.db"
+    app.register_blueprint(draw_bp)
     app.register_blueprint(participant_bp)
 
     db.init_app(app)
