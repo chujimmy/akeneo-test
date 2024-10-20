@@ -1,4 +1,7 @@
 from secret_santa_api.db import db
+from secret_santa_api.domain.entities.participant import (
+    Participant as ParticipantEntity,
+)
 from secret_santa_api.infrastructure.adapters.database.participant import (
     Participant as ParticipantDB,
 )
@@ -33,7 +36,7 @@ class TestParticipantRepositorySQLAdapter:
 
     def test_save(self, app):
         with app.app_context():
-            participant_to_save = ParticipantDB(name="Lando", email="lando@mcl.fr")
+            participant_to_save = ParticipantEntity(name="Lando", email="lando@mcl.fr")
 
             saved_participant = self.participant_adapter.save(participant_to_save)
 
