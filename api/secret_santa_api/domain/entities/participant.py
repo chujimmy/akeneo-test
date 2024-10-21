@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
@@ -6,4 +7,5 @@ from typing import Optional
 class Participant:
     name: str
     email: str
+    created: datetime
     id: Optional[int] = None

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List
 
 from secret_santa_api.domain.entities.participant import Participant
@@ -8,3 +9,4 @@ from secret_santa_api.domain.entities.participant import Participant
 class Draw:
     id: int
     details: List[tuple[Participant, Participant]]
+    created: datetime

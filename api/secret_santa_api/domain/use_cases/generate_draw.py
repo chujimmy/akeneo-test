@@ -12,7 +12,7 @@ class GenerateDraw:
         self,
         participant_repository_port: ParticipantRepositoryPort,
         draw_repository_port: DrawRepositoryPort,
-        retry_factor: int,
+        retry_factor: int = 3,
     ) -> None:
         self.participant_repository_port = participant_repository_port
         self.draw_repository_port = draw_repository_port

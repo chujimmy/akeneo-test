@@ -24,6 +24,7 @@ def generate_draw_handler():
         jsonify(
             {
                 "id": draw.id,
+                "created": draw.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "details": [
                     {
                         "gifter": {

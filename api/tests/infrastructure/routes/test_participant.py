@@ -1,3 +1,5 @@
+import datetime
+
 from secret_santa_api.domain.entities.participant import Participant
 from secret_santa_api.domain.errrors import ParticipantAlreadyRegisteredError
 
@@ -18,8 +20,22 @@ class TestParticipantRoutes:
 
     def test_get_participants_returns_participants(self, client, mocker):
         participants = [
-            Participant(id=1, name="John Doe", email="test@mail.com"),
-            Participant(id=2, name="Jane Doe", email="bonjour@mail.com"),
+            Participant(
+                id=1,
+                name="John Doe",
+                email="test@mail.com",
+                created=datetime.datetime(
+                    2024, 6, 1, 12, 0, 0, 0, tzinfo=datetime.timezone.utc
+                ),
+            ),
+            Participant(
+                id=2,
+                name="Jane Doe",
+                email="bonjour@mail.com",
+                created=datetime.datetime(
+                    2024, 6, 1, 12, 0, 0, 0, tzinfo=datetime.timezone.utc
+                ),
+            ),
         ]
 
         expected_response = [
@@ -27,6 +43,7 @@ class TestParticipantRoutes:
                 "id": p.id,
                 "name": p.name,
                 "email": p.email,
+                "created": p.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
             for p in participants
         ]
@@ -69,7 +86,14 @@ class TestParticipantRoutes:
     def test_add_participant_returns_201(self, client, mocker):
         name = "Charles Leclerc"
         email = "charles.leclerc@ferrari.it"
-        added_participant = Participant(id=1, name=name, email=email)
+        added_participant = Participant(
+            id=1,
+            name=name,
+            email=email,
+            created=datetime.datetime(
+                2024, 6, 1, 12, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+        )
 
         mocker.patch(
             "secret_santa_api.infrastructure.routes.participant.add_participant.perform",
@@ -79,4 +103,9 @@ class TestParticipantRoutes:
         response = client.post("/participants/", json={"name": name, "email": email})
 
         assert response.status_code == 201
-        assert response.json == {"id": 1, "name": name, "email": email}
+        assert response.json == {
+            "id": 1,
+            "name": name,
+            "email": email,
+            "created": "2024-06-01T12:00:00Z",
+        }

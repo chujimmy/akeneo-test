@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import MagicMock
 
 from secret_santa_api.domain.entities.participant import Participant
@@ -8,8 +9,18 @@ from secret_santa_api.domain.use_cases.get_all_participants import GetAllPartici
 class TestGetAllParticipants:
     def test_perform_should_return_participants(self):
         participants = [
-            Participant(id=10, name="Name", email="mail@mail.com"),
-            Participant(id=20, name="FFFF", email="toto@mail.com"),
+            Participant(
+                id=10,
+                name="Name",
+                email="mail@mail.com",
+                created=datetime.datetime.now(datetime.timezone.utc),
+            ),
+            Participant(
+                id=20,
+                name="FFFF",
+                email="toto@mail.com",
+                created=datetime.datetime.now(datetime.timezone.utc),
+            ),
         ]
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
         participant_repository_mock.get_all_participants.return_value = participants
