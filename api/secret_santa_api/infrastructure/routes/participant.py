@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Blueprint, jsonify, request
 
 from secret_santa_api.domain.entities.participant import Participant
@@ -25,6 +27,7 @@ def get_participants_handler():
                     "id": participant.id,
                     "name": participant.name,
                     "email": participant.email,
+                    "created": participant.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 }
                 for participant in participants
             ]
@@ -42,7 +45,11 @@ def add_participant_handler():
 
     try:
         participant = add_participant.perform(
-            Participant(name=new_participant["name"], email=new_participant["email"])
+            Participant(
+                name=new_participant["name"],
+                email=new_participant["email"],
+                created=datetime.datetime.now(datetime.timezone.utc),
+            )
         )
     except ParticipantAlreadyRegisteredError:
         return jsonify({"error": "Participant already registered (email used)"}), 409
@@ -53,6 +60,7 @@ def add_participant_handler():
                 "id": participant.id,
                 "name": participant.name,
                 "email": participant.email,
+                "created": participant.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
         ),
         201,

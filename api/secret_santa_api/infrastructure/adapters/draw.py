@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 from secret_santa_api.db import db
@@ -18,7 +19,7 @@ def to_entity(draw_db: DrawDB) -> Draw:
         (to_participant_entity(detail.gifter), to_participant_entity(detail.receiver))
         for detail in draw_db.details  # type: ignore
     ]
-    return Draw(id=draw_db.id, details=draw_details)
+    return Draw(id=draw_db.id, details=draw_details, created=draw_db.date_created)
 
 
 class DrawRepositorySQLAdapter(DrawRepositoryPort):
@@ -26,7 +27,10 @@ class DrawRepositorySQLAdapter(DrawRepositoryPort):
         draw_details_db = [
             (DrawDetailDB(gifter_id=d[0].id, receiver_id=d[1].id)) for d in draw_details
         ]
-        draw_db = DrawDB(details=draw_details_db)
+        draw_db = DrawDB(
+            details=draw_details_db,
+            date_created=datetime.datetime.now(datetime.timezone.utc),
+        )
 
         db.session.add(draw_db)
         db.session.commit()

@@ -10,7 +10,10 @@ from secret_santa_api.infrastructure.adapters.database.participant import (
 
 def to_entity(participant_db: ParticipantDB) -> Participant:
     return Participant(
-        id=participant_db.id, name=participant_db.name, email=participant_db.email
+        id=participant_db.id,
+        name=participant_db.name,
+        email=participant_db.email,
+        created=participant_db.date_created,
     )
 
 
@@ -26,7 +29,11 @@ class ParticipantRepositorySQLAdapter(ParticipantRepositoryPort):
         return to_entity(participant_db)
 
     def save(self, participant: Participant) -> Participant:
-        participant_db = ParticipantDB(name=participant.name, email=participant.email)
+        participant_db = ParticipantDB(
+            name=participant.name,
+            email=participant.email,
+            date_created=participant.created,
+        )
 
         db.session.add(participant_db)
         db.session.commit()

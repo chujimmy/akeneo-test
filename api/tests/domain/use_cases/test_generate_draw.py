@@ -1,3 +1,4 @@
+import datetime
 import random
 from unittest.mock import MagicMock
 
@@ -11,6 +12,8 @@ from secret_santa_api.domain.use_cases.generate_draw import GenerateDraw
 
 
 class TestGenerateDraw:
+    date_created = datetime.datetime.now(datetime.timezone.utc)
+
     def test_perform_with_no_participant_returns_none(self):
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -24,7 +27,9 @@ class TestGenerateDraw:
         assert draw_repository_mock.save.call_count == 0
 
     def test_perform_with_one_participant_returns_none(self):
-        participant = Participant(id=1, name="Name", email="test@mail.com")
+        participant = Participant(
+            id=1, name="Name", email="test@mail.com", created=self.date_created
+        )
 
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -41,8 +46,12 @@ class TestGenerateDraw:
         # Make the randonmess deterministic
         random.seed(71)
 
-        participant_1 = Participant(id=1, name="Bob", email="bob@mail.com")
-        participant_2 = Participant(id=2, name="Alice", email="alice@mail.com")
+        participant_1 = Participant(
+            id=1, name="Bob", email="bob@mail.com", created=self.date_created
+        )
+        participant_2 = Participant(
+            id=2, name="Alice", email="alice@mail.com", created=self.date_created
+        )
 
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -54,6 +63,7 @@ class TestGenerateDraw:
         draw_repository_mock.save.return_value = Draw(
             id=11,
             details=[(participant_1, participant_2), (participant_2, participant_1)],
+            created=self.date_created,
         )
 
         generate_draw = GenerateDraw(participant_repository_mock, draw_repository_mock)
@@ -78,8 +88,12 @@ class TestGenerateDraw:
         # Make the randonmess deterministic
         random.seed(1)
 
-        participant_1 = Participant(id=1, name="Name", email="test1@mail.com")
-        participant_2 = Participant(id=2, name="Name", email="test2@mail.com")
+        participant_1 = Participant(
+            id=1, name="Name", email="test1@mail.com", created=self.date_created
+        )
+        participant_2 = Participant(
+            id=2, name="Name", email="test2@mail.com", created=self.date_created
+        )
 
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -98,9 +112,15 @@ class TestGenerateDraw:
         # Make the randonmess deterministic
         random.seed(1)
 
-        participant_1 = Participant(id=1, name="Bob", email="bob@mail.com")
-        participant_2 = Participant(id=2, name="Alice", email="alice@mail.com")
-        participant_3 = Participant(id=3, name="Charlie", email="charlie@mail.com")
+        participant_1 = Participant(
+            id=1, name="Bob", email="bob@mail.com", created=self.date_created
+        )
+        participant_2 = Participant(
+            id=2, name="Alice", email="alice@mail.com", created=self.date_created
+        )
+        participant_3 = Participant(
+            id=3, name="Charlie", email="charlie@mail.com", created=self.date_created
+        )
 
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -114,10 +134,24 @@ class TestGenerateDraw:
         # Make the randonmess deterministic
         random.seed(1)
 
-        participant_1 = Participant(id=1, name="Bob", email="bob@mail.com")
-        participant_2 = Participant(id=2, name="Alice", email="alice@mail.com")
-        participant_3 = Participant(id=3, name="Charlie", email="charlie@mail.com")
-        participant_4 = Participant(id=3, name="David", email="david@mail.com")
+        participant_1 = Participant(
+            id=1, name="Bob", email="bob@mail.com", created=self.date_created
+        )
+        participant_2 = Participant(
+            id=2, name="Alice", email="alice@mail.com", created=self.date_created
+        )
+        participant_3 = Participant(
+            id=3,
+            name="Charlie",
+            email="charlie@mail.com",
+            created=datetime.datetime.now(datetime.timezone.utc),
+        )
+        participant_4 = Participant(
+            id=3,
+            name="David",
+            email="david@mail.com",
+            created=datetime.datetime.now(datetime.timezone.utc),
+        )
 
         draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
         participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
@@ -141,7 +175,9 @@ class TestGenerateDraw:
 
         number_participants = 500
         participants = [
-            Participant(id=i, name="Name", email=f"test{i}@mail.com")
+            Participant(
+                id=i, name="Name", email=f"test{i}@mail.com", created=self.date_created
+            )
             for i in range(0, number_participants)
         ]
 
