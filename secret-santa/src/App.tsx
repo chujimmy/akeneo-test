@@ -1,3 +1,4 @@
+import { Draws } from './components/Draws';
 import { Participants } from './components/Participants';
 
 function App() {
@@ -5,6 +6,8 @@ function App() {
     <>
       <h1>Secret Santa</h1>
       <Participants/>
+      <hr/>
+      <Draws/>
     </>
   )
 }
