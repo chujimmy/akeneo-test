@@ -32,7 +32,7 @@ def generate_draw_handler():
                             "name": d[0].name,
                             "email": d[0].email,
                         },
-                        "recevier": {
+                        "receiver": {
                             "id": d[1].id,
                             "name": d[1].name,
                             "email": d[1].email,
