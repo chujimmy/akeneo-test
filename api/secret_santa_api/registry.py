@@ -3,6 +3,7 @@ from environs import Env
 from secret_santa_api.domain.use_cases.add_participant import AddParticipant
 from secret_santa_api.domain.use_cases.generate_draw import GenerateDraw
 from secret_santa_api.domain.use_cases.get_all_participants import GetAllParticipants
+from secret_santa_api.domain.use_cases.get_latest_draws import GetLatestDraws
 from secret_santa_api.infrastructure.adapters.draw import DrawRepositorySQLAdapter
 from secret_santa_api.infrastructure.adapters.participant import (
     ParticipantRepositorySQLAdapter,
@@ -22,4 +23,5 @@ generate_draw = GenerateDraw(
     draw_repository_sql_adapter,
     env.int("DRAW_RETRY_FACTOR", 3),
 )
+get_lastest_draws = GetLatestDraws(draw_repository_sql_adapter)
 get_all_participants = GetAllParticipants(participant_repository_sql_adapter)

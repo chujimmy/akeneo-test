@@ -9,3 +9,7 @@ class DrawRepositoryPort(ABC):
     @abstractmethod
     def save(self, draw: List[tuple[Participant, Participant]]) -> Draw:
         pass
+
+    @abstractmethod
+    def get_latest_draws(self, limit: int) -> List[Draw]:
+        pass

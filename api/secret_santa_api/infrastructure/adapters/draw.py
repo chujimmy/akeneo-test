@@ -37,3 +37,14 @@ class DrawRepositorySQLAdapter(DrawRepositoryPort):
         db.session.refresh(draw_db)
 
         return to_entity(draw_db)
+
+    def get_latest_draws(self, limit: int) -> List[Draw]:
+        draws_db = (
+            DrawDB.query.order_by(DrawDB.date_created.desc(), DrawDB.id.desc())
+            .limit(limit)
+            .all()
+        )
+
+        draws = [to_entity(d) for d in draws_db]
+
+        return draws
