@@ -81,7 +81,7 @@ export class Participants extends React.Component<object, ParticipantsState> {
 
   render() {
     const participantsList = this.state.participants.map((p) => (
-      <li key={p.id}>{p.name} ({p.email})</li>
+      <li key={p.id}>{p.name} ({p.email} - {p.id})</li>
     ));
 
     return (

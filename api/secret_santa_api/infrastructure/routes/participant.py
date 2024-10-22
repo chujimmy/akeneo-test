@@ -3,14 +3,22 @@ import datetime
 from flask import Blueprint, jsonify, request
 
 from secret_santa_api.domain.entities.participant import Participant
-from secret_santa_api.domain.errrors import ParticipantAlreadyRegisteredError
+from secret_santa_api.domain.errrors import (
+    BlacklistAlreadyExistError,
+    ParticipantAlreadyRegisteredError,
+    UnknownParticipantError,
+)
 from secret_santa_api.infrastructure.routes.exceptions.participant import (
     ApiAddParticipantPayloadBadRequest,
 )
 from secret_santa_api.infrastructure.routes.schemas.participant import (
     AddParticipantRequestSchema,
 )
-from secret_santa_api.registry import add_participant, get_all_participants
+from secret_santa_api.registry import (
+    add_participant,
+    blacklist_participant,
+    get_all_participants,
+)
 
 
 participant_bp = Blueprint("participant", __name__, url_prefix="/participants")
@@ -65,3 +73,26 @@ def add_participant_handler():
         ),
         201,
     )
+
+
+@participant_bp.route("/<int:gifter_id>/blacklist/<int:receiver_id>", methods=["POST"])
+def blacklist_participant_handler(gifter_id: int, receiver_id: int):
+    try:
+        blacklist = blacklist_participant.perform(gifter_id, receiver_id)
+
+        return (
+            jsonify(
+                {
+                    "id": blacklist.id,
+                    "created": blacklist.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "gifter_id": blacklist.gifter.id,
+                    "receiver_id": blacklist.receiver.id,
+                }
+            ),
+            201,
+        )
+
+    except UnknownParticipantError:
+        return jsonify({"error": "Unknown participant"}), 400
+    except BlacklistAlreadyExistError:
+        return jsonify({"error": "Blacklist already exist"}), 409

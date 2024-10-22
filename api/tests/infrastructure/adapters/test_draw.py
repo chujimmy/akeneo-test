@@ -9,9 +9,7 @@ from secret_santa_api.infrastructure.adapters.database.participant import (
     Participant as ParticipantDB,
 )
 from secret_santa_api.infrastructure.adapters.draw import DrawRepositorySQLAdapter
-from secret_santa_api.infrastructure.adapters.participant import (
-    to_entity as to_entity_participant,
-)
+from secret_santa_api.infrastructure.adapters.participant import to_participant_entity
 
 
 class TestDrawRepositorySQLAdapter:
@@ -37,9 +35,9 @@ class TestDrawRepositorySQLAdapter:
         db.session.refresh(participant_2_db)
         db.session.refresh(participant_3_db)
 
-        participant_1 = to_entity_participant(participant_1_db)
-        participant_2 = to_entity_participant(participant_2_db)
-        participant_3 = to_entity_participant(participant_3_db)
+        participant_1 = to_participant_entity(participant_1_db)
+        participant_2 = to_participant_entity(participant_2_db)
+        participant_3 = to_participant_entity(participant_3_db)
 
         draw_details = [
             (participant_1, participant_2),
@@ -79,9 +77,9 @@ class TestDrawRepositorySQLAdapter:
         db.session.refresh(participant_2_db)
         db.session.refresh(participant_3_db)
 
-        participant_1 = to_entity_participant(participant_1_db)
-        participant_2 = to_entity_participant(participant_2_db)
-        participant_3 = to_entity_participant(participant_3_db)
+        participant_1 = to_participant_entity(participant_1_db)
+        participant_2 = to_participant_entity(participant_2_db)
+        participant_3 = to_participant_entity(participant_3_db)
 
         draw_1 = DrawDB(
             date_created=now - timedelta(days=100),
@@ -137,9 +135,9 @@ class TestDrawRepositorySQLAdapter:
         db.session.refresh(participant_2_db)
         db.session.refresh(participant_3_db)
 
-        participant_1 = to_entity_participant(participant_1_db)
-        participant_2 = to_entity_participant(participant_2_db)
-        participant_3 = to_entity_participant(participant_3_db)
+        participant_1 = to_participant_entity(participant_1_db)
+        participant_2 = to_participant_entity(participant_2_db)
+        participant_3 = to_participant_entity(participant_3_db)
 
         draw_1 = DrawDB(
             date_created=now - timedelta(days=100),
