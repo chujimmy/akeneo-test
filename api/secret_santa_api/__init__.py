@@ -13,8 +13,6 @@ from secret_santa_api.infrastructure.routes.draw import draw_bp
 from secret_santa_api.infrastructure.routes.participant import participant_bp
 
 
-
-
 def create_app(config_file_path: str):
     load_dotenv(dotenv_path=config_file_path)
 

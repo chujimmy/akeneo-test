@@ -9,12 +9,10 @@ from secret_santa_api.infrastructure.adapters.database.draw import (
     Draw as DrawDB,
     DrawDetail as DrawDetailDB,
 )
-from secret_santa_api.infrastructure.adapters.participant import (
-    to_entity as to_participant_entity,
-)
+from secret_santa_api.infrastructure.adapters.participant import to_participant_entity
 
 
-def to_entity(draw_db: DrawDB) -> Draw:
+def to_draw_entity(draw_db: DrawDB) -> Draw:
     draw_details = [
         (to_participant_entity(detail.gifter), to_participant_entity(detail.receiver))
         for detail in draw_db.details  # type: ignore
@@ -36,7 +34,7 @@ class DrawRepositorySQLAdapter(DrawRepositoryPort):
         db.session.commit()
         db.session.refresh(draw_db)
 
-        return to_entity(draw_db)
+        return to_draw_entity(draw_db)
 
     def get_latest_draws(self, limit: int) -> List[Draw]:
         draws_db = (
@@ -45,6 +43,6 @@ class DrawRepositorySQLAdapter(DrawRepositoryPort):
             .all()
         )
 
-        draws = [to_entity(d) for d in draws_db]
+        draws = [to_draw_entity(d) for d in draws_db]
 
         return draws

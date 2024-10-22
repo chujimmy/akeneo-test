@@ -1,7 +1,7 @@
 import pytest
 
-from secret_santa_api.db import db
 from secret_santa_api import create_app
+from secret_santa_api.db import db
 
 
 @pytest.fixture(scope="function")
@@ -11,7 +11,6 @@ def app():
     return app
 
 
-
 @pytest.fixture(scope="function")
 def app_context(app):
     with app.app_context():
@@ -19,6 +18,7 @@ def app_context(app):
 
         db.session.remove()  # Remove any sessions
         db.drop_all()  # Drop all tables
+
 
 @pytest.fixture(scope="function")
 def client(app):

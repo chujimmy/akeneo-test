@@ -9,3 +9,11 @@ class Participant:
     email: str
     created: datetime
     id: Optional[int] = None
+
+
+@dataclass(frozen=True, order=True)
+class Blacklist:
+    id: int
+    created: datetime
+    gifter: Participant
+    receiver: Participant
