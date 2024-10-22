@@ -13,12 +13,13 @@ from secret_santa_api.infrastructure.routes.draw import draw_bp
 from secret_santa_api.infrastructure.routes.participant import participant_bp
 
 
-load_dotenv(dotenv_path="./secret_santa_api/.env")
-
-env = Env()
 
 
-def create_app(testing: bool = False):
+def create_app(config_file_path: str):
+    load_dotenv(dotenv_path=config_file_path)
+
+    env = Env()
+
     app = Flask(__name__)
     app.url_map.strict_slashes = False
     app.errorhandler(Exception)(handle_error)
@@ -31,8 +32,6 @@ def create_app(testing: bool = False):
     CORS(app, resources={r"*": {"origins": "http://localhost:5173"}})
 
     with app.app_context():
-        if testing:
-            db.drop_all()
         db.create_all()
 
     @app.errorhandler(HTTPException)

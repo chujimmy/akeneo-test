@@ -43,7 +43,7 @@ class TestParticipantRoutes:
                 "id": p.id,
                 "name": p.name,
                 "email": p.email,
-                "created": p.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "created": p.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             }
             for p in participants
         ]
@@ -107,5 +107,5 @@ class TestParticipantRoutes:
             "id": 1,
             "name": name,
             "email": email,
-            "created": "2024-06-01T12:00:00Z",
+            "created": "2024-06-01T12:00:00.000000Z",
         }

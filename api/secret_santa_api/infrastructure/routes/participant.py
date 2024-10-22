@@ -27,7 +27,7 @@ def get_participants_handler():
                     "id": participant.id,
                     "name": participant.name,
                     "email": participant.email,
-                    "created": participant.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "created": participant.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 }
                 for participant in participants
             ]
@@ -60,7 +60,7 @@ def add_participant_handler():
                 "id": participant.id,
                 "name": participant.name,
                 "email": participant.email,
-                "created": participant.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "created": participant.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             }
         ),
         201,

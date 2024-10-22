@@ -10,7 +10,7 @@ class Draw(db.Model):  # type: ignore
     date_created = db.Column(
         db.DateTime,
         nullable=False,
-        server_default=func.strftime("%Y-%m-%dT%H:%M:%SZ", func.datetime("now", "utc")),
+        server_default=func.strftime("%Y-%m-%dT%H:%M:%fZ"),
     )
 
     details = db.relationship("DrawDetail", back_populates="draw")
