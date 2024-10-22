@@ -9,11 +9,12 @@ interface AddParticipantFormData {
 interface ParticipantsState {
   participants: Array<{ id: number; name: string; email: string }>;
   formData: AddParticipantFormData;
-  errorMessage: string;
+  errorMessageParticipantsList: string;
+  errorMessageAddParticipants: string;
 }
 
-export class Participants extends React.Component<{}, ParticipantsState> {
-  constructor(props: {}) {
+export class Participants extends React.Component<object, ParticipantsState> {
+  constructor(props: object) {
     super(props);
     this.state = {
       participants: [],
@@ -21,7 +22,8 @@ export class Participants extends React.Component<{}, ParticipantsState> {
         participantName: '',
         participantEmail: '',
       },
-      errorMessage: '',
+      errorMessageParticipantsList: '',
+      errorMessageAddParticipants: '',
     };
   }
 
@@ -32,8 +34,8 @@ export class Participants extends React.Component<{}, ParticipantsState> {
           participants: res.data.participants,
         });
       })
-      .catch(err => {
-        console.error('Error fetching participants:', err);
+      .catch(() => {
+        this.setState({errorMessageParticipantsList: 'Error fetching list of participants'});
       });
   }
 
@@ -44,7 +46,7 @@ export class Participants extends React.Component<{}, ParticipantsState> {
         ...prevState.formData,
         [name]: value,
       },
-      errorMessage: '',
+      errorMessageAddParticipants: '',
     }));
   };
 
@@ -64,15 +66,15 @@ export class Participants extends React.Component<{}, ParticipantsState> {
             participantName: '',
             participantEmail: '',
           },
-          errorMessage: '',
+          errorMessageParticipantsList: '',
         }));
       })
       .catch(error => {
         if (error.response && error.response.status === 409) {
-          this.setState({ errorMessage: 'Participant already exists.' });
+          this.setState({ errorMessageAddParticipants: 'Participant already exists.' });
         } else {
           console.error('Error adding participant:', error);
-          this.setState({ errorMessage: 'Failed to add participant.' });
+          this.setState({ errorMessageAddParticipants: 'Failed to add participant.' });
         }
       });
   };
@@ -84,18 +86,7 @@ export class Participants extends React.Component<{}, ParticipantsState> {
 
     return (
       <div className="participant">
-        <div className="participants-list">
-          <h3>Registered participants</h3>
-          {this.state.participants.length > 0 && <ul>
-            {participantsList}
-          </ul>}
-          {this.state.participants.length == 0 && <p>No participants to secret santa :(</p>}
-        </div>
-        {this.state.errorMessage && (
-          <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
-            {this.state.errorMessage}
-          </div>
-        )}
+        <h2>Participants</h2>
         <form onSubmit={this.handleSubmit}>
           <h3>Add a new participant</h3>
           <div>
@@ -111,7 +102,26 @@ export class Participants extends React.Component<{}, ParticipantsState> {
             </label>
           </div>
           <button type="submit">Submit</button>
+          {this.state.errorMessageAddParticipants && (
+            <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+              {this.state.errorMessageAddParticipants}
+            </div>
+          )}
         </form>
+
+
+        <div className="participants-list">
+          <h3>Registered participants</h3>
+          {this.state.participants.length > 0 && <ul>
+            {participantsList}
+          </ul>}
+          {this.state.participants.length == 0 && <p>No participants to secret santa :(</p>}
+          {this.state.errorMessageParticipantsList && (
+            <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+              {this.state.errorMessageParticipantsList}
+            </div>
+          )}
+        </div>
       </div>
     );
   }

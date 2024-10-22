@@ -31,8 +31,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -63,4 +61,17 @@ button:focus-visible {
 
 li {
   text-align: left;
+}
+
+.draw {
+  margin-top: 20px;
+}
+
+.draw-detail {
+  display: block;
+}
+
+button {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
