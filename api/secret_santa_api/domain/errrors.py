@@ -8,3 +8,7 @@ class UnknownParticipantError(Exception):
 
 class BlacklistAlreadyExistError(Exception):
     pass
+
+
+class BlacklistNotFoundError(Exception):
+    pass

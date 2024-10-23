@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from secret_santa_api.db import db
 from secret_santa_api.domain.entities.participant import Blacklist, Participant
+from secret_santa_api.domain.errrors import BlacklistNotFoundError
 from secret_santa_api.domain.ports.participant import ParticipantRepositoryPort
 from secret_santa_api.infrastructure.adapters.database.participant import (
     Blacklist as BlacklistDB,
@@ -89,3 +90,18 @@ class ParticipantRepositorySQLAdapter(ParticipantRepositoryPort):
         db.session.refresh(blacklist_db)
 
         return to_blacklist_entity(blacklist_db)
+
+    def delete_blacklist_entry(
+        self, gifter: Participant, receiver: Participant
+    ) -> None:
+        blacklist = BlacklistDB.query.filter(
+            BlacklistDB.gifter_id == gifter.id, BlacklistDB.receiver_id == receiver.id
+        ).first()
+
+        if not blacklist:
+            raise BlacklistNotFoundError()
+        else:
+            db.session.delete(blacklist)
+            db.session.commit()
+
+        return

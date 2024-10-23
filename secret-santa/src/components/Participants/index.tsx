@@ -86,7 +86,24 @@ export class Participants extends React.Component<object, ParticipantsState> {
           const errorMessage = error.response?.data?.error || 'Could add participant to blacklist';
           this.setState({ errorMessageBlacklist: errorMessage });
         });
-    }
+    } else {
+      updatedBlacklist = updatedBlacklist.filter(id => id !== receiverId);
+      axios.delete(`http://localhost:8000/participants/${gifterId}/blacklist/${receiverId}`)
+        .then(() => {
+          this.setState(prevState => ({
+            participants: prevState.participants.map((p) => {
+              return {
+                ...p,
+                blacklist: p.id === gifterId ? updatedBlacklist: p.blacklist,
+              };
+            }),
+          }));
+        })
+        .catch(error => {
+          const errorMessage = error.response?.data?.error || 'Could not remove from blacklist';
+          this.setState({ errorMessageBlacklist: errorMessage });
+        });
+      }
   };
 
   handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
