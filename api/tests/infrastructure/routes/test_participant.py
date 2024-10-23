@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from secret_santa_api.domain.entities.participant import Blacklist, Participant
 from secret_santa_api.domain.errrors import (
     BlacklistAlreadyExistError,
+    BlacklistNotFoundError,
     ParticipantAlreadyRegisteredError,
     UnknownParticipantError,
 )
@@ -107,6 +108,7 @@ class TestParticipantRoutes:
             "name": name,
             "email": email,
             "created": "2024-06-01T12:00:00.000000Z",
+            "blacklist": [],
         }
 
     def test_blacklist_participant_with_unknown_participant_returns_400(
@@ -169,3 +171,39 @@ class TestParticipantRoutes:
             "gifter_id": blacklist.gifter.id,
             "receiver_id": blacklist.receiver.id,
         }
+
+    def test_delete_blacklist_entry_with_unknown_participant_returns_400(
+        self, client, mocker
+    ):
+        mocker.patch(
+            "secret_santa_api.infrastructure.routes.participant.delete_blacklist_entry.perform",
+            side_effect=UnknownParticipantError,
+        )
+
+        response = client.delete("/participants/1/blacklist/2")
+
+        assert response.status_code == 400
+        assert response.json["error"] == "Unknown participant"
+
+    def test_delete_blacklist_entry_without_valid_blacklist_entry_returns_404(
+        self, client, mocker
+    ):
+        mocker.patch(
+            "secret_santa_api.infrastructure.routes.participant.delete_blacklist_entry.perform",
+            side_effect=BlacklistNotFoundError,
+        )
+
+        response = client.delete("/participants/1/blacklist/2")
+
+        assert response.status_code == 404
+        assert response.json["error"] == "Blacklist entry does not exist"
+
+    def test_delete_blacklist_entry_returns_204(self, client, mocker):
+        mocker.patch(
+            "secret_santa_api.infrastructure.routes.participant.delete_blacklist_entry.perform",
+            return_value=None,
+        )
+
+        response = client.delete("/participants/1/blacklist/2")
+
+        assert response.status_code == 204

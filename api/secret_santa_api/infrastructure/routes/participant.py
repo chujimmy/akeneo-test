@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request
 from secret_santa_api.domain.entities.participant import Participant
 from secret_santa_api.domain.errrors import (
     BlacklistAlreadyExistError,
+    BlacklistNotFoundError,
     ParticipantAlreadyRegisteredError,
     UnknownParticipantError,
 )
@@ -17,6 +18,7 @@ from secret_santa_api.infrastructure.routes.schemas.participant import (
 from secret_santa_api.registry import (
     add_participant,
     blacklist_participant,
+    delete_blacklist_entry,
     get_all_participants,
 )
 
@@ -70,6 +72,7 @@ def add_participant_handler():
                 "name": participant.name,
                 "email": participant.email,
                 "created": participant.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "blacklist": [],
             }
         ),
         201,
@@ -97,3 +100,18 @@ def blacklist_participant_handler(gifter_id: int, receiver_id: int):
         return jsonify({"error": "Unknown participant"}), 400
     except BlacklistAlreadyExistError:
         return jsonify({"error": "Blacklist already exist"}), 409
+
+
+@participant_bp.route(
+    "/<int:gifter_id>/blacklist/<int:receiver_id>", methods=["DELETE"]
+)
+def delete_blacklist_entry_handler(gifter_id: int, receiver_id: int):
+    try:
+        delete_blacklist_entry.perform(gifter_id, receiver_id)
+
+        return "", 204
+
+    except UnknownParticipantError:
+        return jsonify({"error": "Unknown participant"}), 400
+    except BlacklistNotFoundError:
+        return jsonify({"error": "Blacklist entry does not exist"}), 404

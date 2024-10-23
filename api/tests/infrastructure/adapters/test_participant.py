@@ -1,9 +1,12 @@
-import datetime
+from datetime import datetime, timezone
+
+import pytest
 
 from secret_santa_api.db import db
 from secret_santa_api.domain.entities.participant import (
     Participant as ParticipantEntity,
 )
+from secret_santa_api.domain.errrors import BlacklistNotFoundError
 from secret_santa_api.infrastructure.adapters.database.participant import (
     Blacklist as BlacklistDB,
     Participant as ParticipantDB,
@@ -54,7 +57,7 @@ class TestParticipantRepositorySQLAdapter:
         participant_to_save = ParticipantEntity(
             name="Lando",
             email="lando@mcl.fr",
-            created=datetime.datetime.now(datetime.timezone.utc),
+            created=datetime.now(timezone.utc),
         )
 
         saved_participant = self.participant_adapter.save(participant_to_save)
@@ -117,3 +120,41 @@ class TestParticipantRepositorySQLAdapter:
         )
 
         assert blacklist_exists is False
+
+    def test_delete_blacklist_entry_without_existing_blacklist_raises_error(
+        self, app_context
+    ):
+        gifter = ParticipantEntity(
+            id=1, name="Alice", email="a@d.fr", created=datetime.now(timezone.utc)
+        )
+        receiver = ParticipantEntity(
+            id=2, name="Bob", email="b@d.fr", created=datetime.now(timezone.utc)
+        )
+
+        with pytest.raises(BlacklistNotFoundError):
+            self.participant_adapter.delete_blacklist_entry(gifter, receiver)
+
+    def test_delete_blacklist_should_delete(self, app_context):
+        gifter_db = ParticipantDB(name="Max", email="max@mail.fr")
+        receiver_db = ParticipantDB(name="Alice", email="alice@mail.fr")
+        db.session.add(gifter_db)
+        db.session.add(receiver_db)
+        db.session.commit()
+        db.session.refresh(gifter_db)
+        db.session.refresh(receiver_db)
+
+        blacklist_db = BlacklistDB(gifter_id=gifter_db.id, receiver_id=receiver_db.id)
+        db.session.add(blacklist_db)
+        db.session.commit()
+        db.session.refresh(blacklist_db)
+
+        gifter = to_participant_entity(gifter_db)
+        receiver = to_participant_entity(receiver_db)
+
+        self.participant_adapter.delete_blacklist_entry(gifter, receiver)
+
+        blacklist_db = BlacklistDB.query.filter(
+            BlacklistDB.gifter_id == gifter.id, BlacklistDB.receiver_id == receiver.id
+        ).first()
+
+        assert blacklist_db is None

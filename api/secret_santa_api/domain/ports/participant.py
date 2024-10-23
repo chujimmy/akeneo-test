@@ -30,3 +30,9 @@ class ParticipantRepositoryPort(ABC):
         self, gifter: Participant, receiver: Participant
     ) -> Blacklist:
         pass
+
+    @abstractmethod
+    def delete_blacklist_entry(
+        self, gifter: Participant, receiver: Participant
+    ) -> None:
+        pass
