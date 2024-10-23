@@ -72,6 +72,7 @@ def add_participant_handler():
                 "name": participant.name,
                 "email": participant.email,
                 "created": participant.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "blacklist": [],
             }
         ),
         201,

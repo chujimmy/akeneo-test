@@ -108,6 +108,7 @@ class TestParticipantRoutes:
             "name": name,
             "email": email,
             "created": "2024-06-01T12:00:00.000000Z",
+            "blacklist": [],
         }
 
     def test_blacklist_participant_with_unknown_participant_returns_400(
