@@ -15,27 +15,15 @@ class Participant(db.Model):  # type: ignore
         server_default=func.strftime("%Y-%m-%dT%H:%M:%fZ"),
     )
 
-    # Relationship to draw detail
-    receiver_assignments = db.relationship(
-        "DrawDetail",
-        back_populates="receiver",
-        foreign_keys="[DrawDetail.receiver_id]",
-    )
-    gifter_assignments = db.relationship(
-        "DrawDetail",
-        back_populates="gifter",
-        foreign_keys="[DrawDetail.gifter_id]",
-    )
-
     # Relationship to blacklist
     blacklisted_by = db.relationship(
         "Blacklist",
-        back_populates="receiver",
+        backref="receiver",
         foreign_keys="[Blacklist.receiver_id]",
     )
     blacklisting = db.relationship(
         "Blacklist",
-        back_populates="gifter",
+        backref="gifter",
         foreign_keys="[Blacklist.gifter_id]",
     )
 
@@ -50,17 +38,6 @@ class Blacklist(db.Model):  # type: ignore
         db.DateTime,
         nullable=False,
         server_default=func.strftime("%Y-%m-%dT%H:%M:%fZ"),
-    )
-
-    gifter = db.relationship(
-        "Participant",
-        back_populates="blacklisting",
-        foreign_keys=[gifter_id],
-    )
-    receiver = db.relationship(
-        "Participant",
-        back_populates="blacklisted_by",
-        foreign_keys=[receiver_id],
     )
 
     __table_args__ = (

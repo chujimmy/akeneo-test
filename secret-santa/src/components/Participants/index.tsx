@@ -142,7 +142,7 @@ export class Participants extends React.Component<object, ParticipantsState> {
         .map((other) => (
           <div>
             <input type="checkbox" onChange={this.handleChangeBlacklist} checked={participant.blacklist.includes(other.id) ? 'checked' : ''} id={participant.id + '-' + other.id} name={participant.id + '-' + other.id}  />
-            <label htmlFor={participant.id + '-' + other.id} >{other.name}</label>
+            <label htmlFor={participant.id + '-' + other.id} >{other.name} ({other.email} - {other.id})</label>
           </div>
       ));
 
@@ -150,7 +150,7 @@ export class Participants extends React.Component<object, ParticipantsState> {
         <li className="participant-list" key={participant.id}>
           {participant.name} ({participant.email} - {participant.id})
 
-          <p>Tick all relevant boxes to ensure the partipant above WILL NOT the selected participants as a gift receiver</p>
+          <p>Tick all relevant boxes to ensure the partipant above WILL NOT draw the selected participants as a gift receiver</p>
           {blacklist}
         </li>
       );

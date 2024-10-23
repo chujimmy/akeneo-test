@@ -36,6 +36,8 @@ class GenerateDraw:
     def make_draw(
         self, participants: List[Participant]
     ) -> List[tuple[Participant, Participant]]:
+        participants_dict = {p.id: p for p in participants}
+
         random.shuffle(participants)
 
         draw_details = []
@@ -44,6 +46,9 @@ class GenerateDraw:
         for gifter in participants:
             possible_gift_receivers = set(participants).copy()
             possible_gift_receivers.remove(gifter)
+            possible_gift_receivers.difference_update(
+                {participants_dict.get(id, None) for id in gifter.blacklist}
+            )
             possible_gift_receivers.difference_update(already_drawn_receivers)
 
             if not possible_gift_receivers:
