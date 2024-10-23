@@ -36,6 +36,7 @@ def get_participants_handler():
                     "name": participant.name,
                     "email": participant.email,
                     "created": participant.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "blacklist": list(participant.blacklist),
                 }
                 for participant in participants
             ]

@@ -15,6 +15,7 @@ def to_participant_entity(participant_db: ParticipantDB) -> Participant:
         name=participant_db.name,
         email=participant_db.email,
         created=participant_db.date_created,
+        blacklist={b.receiver.id for b in participant_db.blacklisting},  # type: ignore
     )
 
 
@@ -22,8 +23,8 @@ def to_blacklist_entity(blacklist_db: BlacklistDB) -> Blacklist:
     return Blacklist(
         id=blacklist_db.id,
         created=blacklist_db.date_created,
-        gifter=to_participant_entity(blacklist_db.gifter),
-        receiver=to_participant_entity(blacklist_db.receiver),
+        gifter=to_participant_entity(blacklist_db.gifter),  # type: ignore
+        receiver=to_participant_entity(blacklist_db.receiver),  # type: ignore
     )
 
 

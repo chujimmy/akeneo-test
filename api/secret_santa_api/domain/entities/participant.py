@@ -1,6 +1,8 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Set
 
 
 @dataclass(frozen=True, order=True)
@@ -8,6 +10,7 @@ class Participant:
     name: str
     email: str
     created: datetime
+    blacklist: Set[int] = field(default_factory=set, hash=False)
     id: Optional[int] = None
 
 
