@@ -95,10 +95,7 @@ class TestGenerateDraw:
             id=2, name="Name", email="test2@mail.com", created=self.date_created
         )
 
-        draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
-        participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
-
-        generate_draw = GenerateDraw(participant_repository_mock, draw_repository_mock)
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
 
         draw = generate_draw.make_draw([participant_1, participant_2])
 
@@ -122,10 +119,7 @@ class TestGenerateDraw:
             id=3, name="Charlie", email="charlie@mail.com", created=self.date_created
         )
 
-        draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
-        participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
-
-        generate_draw = GenerateDraw(participant_repository_mock, draw_repository_mock)
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
 
         with pytest.raises(ValueError):
             generate_draw.make_draw([participant_1, participant_2, participant_3])
@@ -153,10 +147,7 @@ class TestGenerateDraw:
             created=datetime.datetime.now(datetime.timezone.utc),
         )
 
-        draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
-        participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
-
-        generate_draw = GenerateDraw(participant_repository_mock, draw_repository_mock)
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
 
         draw = generate_draw.make_draw(
             [participant_1, participant_2, participant_3, participant_4]
@@ -176,15 +167,16 @@ class TestGenerateDraw:
         number_participants = 500
         participants = [
             Participant(
-                id=i, name="Name", email=f"test{i}@mail.com", created=self.date_created
+                id=i,
+                name="Name",
+                email=f"test{i}@mail.com",
+                created=self.date_created,
+                blacklist=[(i % 500) + 1],
             )
             for i in range(0, number_participants)
         ]
 
-        draw_repository_mock = MagicMock(spec=DrawRepositoryPort)
-        participant_repository_mock = MagicMock(spec=ParticipantRepositoryPort)
-
-        generate_draw = GenerateDraw(participant_repository_mock, draw_repository_mock)
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
 
         draw = generate_draw.make_draw(participants)
 
@@ -199,3 +191,113 @@ class TestGenerateDraw:
         assert len(unique_gifters) == number_participants
         assert len(unique_receivers) == number_participants
         assert not any_draw_self
+
+    def test_make_draw_with_one_participant_blacklists_all_other_participants_raises_error(
+        self,
+    ):
+        participant_1 = Participant(
+            id=1,
+            name="Bob",
+            email="bob@mail.com",
+            created=self.date_created,
+            blacklist=[],
+        )
+        participant_2 = Participant(
+            id=2,
+            name="Alice",
+            email="alice@mail.com",
+            created=self.date_created,
+            blacklist=[],
+        )
+        participant_3 = Participant(
+            id=3,
+            name="Charlie",
+            email="charlie@mail.com",
+            created=self.date_created,
+            blacklist=[1, 2],
+        )
+
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
+
+        # regardless of the randomness, this will fail. Repeating to prove any random pick will fail
+        for _i in range(5000):
+            with pytest.raises(ValueError):
+                generate_draw.make_draw([participant_1, participant_2, participant_3])
+
+    def test_make_draw_with_one_participant_blacklisted_by_all_others_participants_raises_error(
+        self,
+    ):
+        participant_1 = Participant(
+            id=1,
+            name="Bob",
+            email="bob@mail.com",
+            created=self.date_created,
+            blacklist=[],
+        )
+        participant_2 = Participant(
+            id=2,
+            name="Alice",
+            email="alice@mail.com",
+            created=self.date_created,
+            blacklist=[1],
+        )
+        participant_3 = Participant(
+            id=3,
+            name="Charlie",
+            email="charlie@mail.com",
+            created=self.date_created,
+            blacklist=[1],
+        )
+
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
+
+        # regardless of the randomness, this will fail. Repeating to prove any random pick will fail
+        for _i in range(5000):
+            with pytest.raises(ValueError):
+                generate_draw.make_draw([participant_1, participant_2, participant_3])
+
+    def test_make_draw_with_blacklist_returns_draw(
+        self,
+    ):
+        # Make the randonmess deterministic
+        random.seed(1)
+        participant_1 = Participant(
+            id=1,
+            name="Bob",
+            email="bob@mail.com",
+            created=self.date_created,
+            blacklist=[2],
+        )
+        participant_2 = Participant(
+            id=2,
+            name="Alice",
+            email="alice@mail.com",
+            created=self.date_created,
+            blacklist=[3],
+        )
+        participant_3 = Participant(
+            id=3,
+            name="Charlie",
+            email="charlie@mail.com",
+            created=self.date_created,
+            blacklist=[1],
+        )
+
+        generate_draw = GenerateDraw(MagicMock(), MagicMock())
+
+        draw = generate_draw.make_draw([participant_1, participant_2, participant_3])
+
+        unique_gifters = [t[0] for t in draw]
+        unique_receivers = [t[1] for t in draw]
+        any_draw_self = next(
+            (True for draw_detail in draw if draw_detail[0] == draw_detail[1]),
+            False,
+        )
+
+        assert len(draw) == 3
+        assert len(unique_gifters) == 3
+        assert len(unique_receivers) == 3
+        assert not any_draw_self
+        assert draw[0] == (participant_2, participant_1)
+        assert draw[1] == (participant_3, participant_2)
+        assert draw[2] == (participant_1, participant_3)

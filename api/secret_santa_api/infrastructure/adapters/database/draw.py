@@ -25,13 +25,10 @@ class DrawDetail(db.Model):  # type: ignore
     receiver_id = db.Column(db.Integer, db.ForeignKey("participant.id"))
 
     draw = db.relationship("Draw", back_populates="details")
+
     gifter = db.relationship(
-        "Participant",
-        back_populates="receiver_assignments",
-        foreign_keys=[gifter_id],
+        "Participant", backref="draw_gifted", foreign_keys=[gifter_id]
     )
     receiver = db.relationship(
-        "Participant",
-        back_populates="gifter_assignments",
-        foreign_keys=[receiver_id],
+        "Participant", backref="draw_received", foreign_keys=[receiver_id]
     )
