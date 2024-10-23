@@ -7,10 +7,11 @@ interface AddParticipantFormData {
 }
 
 interface ParticipantsState {
-  participants: Array<{ id: number; name: string; email: string }>;
+  participants: Array<{ id: number; name: string; email: string, blacklist: Array<number> }>;
   formData: AddParticipantFormData;
   errorMessageParticipantsList: string;
   errorMessageAddParticipants: string;
+  errorMessageBlacklist: string;
 }
 
 export class Participants extends React.Component<object, ParticipantsState> {
@@ -24,6 +25,7 @@ export class Participants extends React.Component<object, ParticipantsState> {
       },
       errorMessageParticipantsList: '',
       errorMessageAddParticipants: '',
+      errorMessageBlacklist: '',
     };
   }
 
@@ -48,6 +50,43 @@ export class Participants extends React.Component<object, ParticipantsState> {
       },
       errorMessageAddParticipants: '',
     }));
+  };
+
+  handleChangeBlacklist = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ errorMessageBlacklist: '' });
+
+    const { name } = e.target;
+
+    const gifterId = Number(name.split('-')[0]);
+    const receiverId = Number(name.split('-')[1]);
+
+    const participant = this.state.participants.find(p => p.id === gifterId );
+
+    if (!participant) {
+      return;
+    }
+
+    const addToBlacklist = participant.blacklist.indexOf(receiverId) == -1;
+    let updatedBlacklist = [...participant.blacklist];
+
+    if (addToBlacklist) {
+      updatedBlacklist.push(receiverId);
+      axios.post(`http://localhost:8000/participants/${gifterId}/blacklist/${receiverId}`)
+        .then(() => {
+          this.setState(prevState => ({
+            participants: prevState.participants.map((p) => {
+              return {
+                ...p,
+                blacklist: p.id === gifterId ? updatedBlacklist: p.blacklist,
+              };
+            }),
+          }));
+        })
+        .catch(error => {
+          const errorMessage = error.response?.data?.error || 'Could add participant to blacklist';
+          this.setState({ errorMessageBlacklist: errorMessage });
+        });
+    }
   };
 
   handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,9 +119,25 @@ export class Participants extends React.Component<object, ParticipantsState> {
   };
 
   render() {
-    const participantsList = this.state.participants.map((p) => (
-      <li key={p.id}>{p.name} ({p.email} - {p.id})</li>
-    ));
+    const participantsList = this.state.participants.map((participant) => {
+      const blacklist = this.state.participants
+        .filter((other) => ( other.id !== participant.id ))
+        .map((other) => (
+          <div>
+            <input type="checkbox" onChange={this.handleChangeBlacklist} checked={participant.blacklist.includes(other.id) ? 'checked' : ''} id={participant.id + '-' + other.id} name={participant.id + '-' + other.id}  />
+            <label htmlFor={participant.id + '-' + other.id} >{other.name}</label>
+          </div>
+      ));
+
+      return (
+        <li className="participant-list" key={participant.id}>
+          {participant.name} ({participant.email} - {participant.id})
+
+          <p>Tick all relevant boxes to ensure the partipant above WILL NOT the selected participants as a gift receiver</p>
+          {blacklist}
+        </li>
+      );
+    });
 
     return (
       <div className="participant">
@@ -112,6 +167,11 @@ export class Participants extends React.Component<object, ParticipantsState> {
 
         <div className="participants-list">
           <h3>Registered participants</h3>
+          {this.state.errorMessageBlacklist && (
+            <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>
+              {this.state.errorMessageBlacklist}
+            </div>
+          )}
           {this.state.participants.length > 0 && <ul>
             {participantsList}
           </ul>}

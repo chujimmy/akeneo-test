@@ -44,6 +44,7 @@ class TestParticipantRoutes:
                 "name": p.name,
                 "email": p.email,
                 "created": p.created.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "blacklist": [],
             }
             for p in participants
         ]

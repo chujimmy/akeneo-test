@@ -52,12 +52,12 @@ class Blacklist(db.Model):  # type: ignore
         server_default=func.strftime("%Y-%m-%dT%H:%M:%fZ"),
     )
 
-    receiver = db.relationship(
+    gifter = db.relationship(
         "Participant",
         back_populates="blacklisting",
         foreign_keys=[gifter_id],
     )
-    gifter = db.relationship(
+    receiver = db.relationship(
         "Participant",
         back_populates="blacklisted_by",
         foreign_keys=[receiver_id],
