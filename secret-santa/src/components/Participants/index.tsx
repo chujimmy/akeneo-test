@@ -150,7 +150,8 @@ export class Participants extends React.Component<object, ParticipantsState> {
         <li className="participant-list" key={participant.id}>
           {participant.name} ({participant.email} - {participant.id})
 
-          <p>Tick all relevant boxes to ensure the partipant above WILL NOT draw the selected participants as a gift receiver</p>
+          {this.state.participants.length > 1 &&
+          <p>Tick all relevant boxes to ensure the partipant above WILL NOT draw the selected participants as a gift receiver</p>}
           {blacklist}
         </li>
       );
